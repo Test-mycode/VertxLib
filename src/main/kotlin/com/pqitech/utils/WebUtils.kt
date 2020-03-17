@@ -1,17 +1,21 @@
 package com.pqitech.utils
 
+//import io.vertx.core.logging.LoggerFactory
 import com.pqitech.exception.ErrorCodeException
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
-//import io.vertx.core.logging.LoggerFactory
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.CorsHandler
+import io.vertx.ext.web.handler.SessionHandler
+import io.vertx.ext.web.sstore.ClusteredSessionStore
+import io.vertx.ext.web.sstore.LocalSessionStore
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.net.CookieHandler
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -79,7 +83,6 @@ fun RoutingContext.handleException(e : Throwable?, status : Int = 500, msg : Str
   this.response().endJson(ret)
 }
 
-
 fun Router.enableCors() {
   this.route().handler( CorsHandler.create("*")
     .allowedMethod(HttpMethod.POST).allowedMethod(HttpMethod.GET)
@@ -93,6 +96,19 @@ fun Router.enableCors() {
   )
 }
 
+//enableClusteredSession(Router router) {
+//  router.route().handler(CookieHandler.create());
+//  router.route().handler(SessionHandler.create(
+//    ClusteredSessionStore.create(vertx, "shopping.user.session")));
+//}
+//fun Router.enableLocalSession() {
+//  this.route().handler(CookieHandler.getDefault())
+//  this..route().handler(
+//    SessionHandler.create(
+//      LocalSessionStore.create(vertx, "shopping.user.session")
+//    )
+//  )
+//}
 
 fun Router.bodyHandle(maxBody: Long,handleFileUploads : Boolean = true,deleteOnEnd : Boolean = false,upDirPath : String? = null) {
   val bodyHandler =  BodyHandler.create(handleFileUploads).setBodyLimit(maxBody)
