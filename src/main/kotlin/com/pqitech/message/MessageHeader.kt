@@ -1,4 +1,4 @@
-package com.pqitech.fundamental.message
+package com.pqitech.message
 
 import io.vertx.core.buffer.Buffer
 
