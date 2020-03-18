@@ -1,6 +1,5 @@
 package com.pqitech.utils
 
-
 import java.nio.charset.Charset
 import java.security.MessageDigest
 
@@ -25,4 +24,6 @@ private fun hashString(type: String, input: String): String {
 
   return bytes.toHex()
 }
+
+
 
