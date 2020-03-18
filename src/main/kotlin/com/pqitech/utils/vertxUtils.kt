@@ -5,9 +5,8 @@ import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import io.netty.util.internal.logging.InternalLoggerFactory
-import io.netty.util.internal.logging.JdkLoggerFactory
+import io.netty.util.internal.logging.Log4J2LoggerFactory
 
 fun Vertx.launch(handle : suspend ()-> Unit) = CoroutineScope(this.dispatcher()).launch{handle()}
 
-fun nettyUseJdkLog() =  InternalLoggerFactory.setDefaultFactory(JdkLoggerFactory.INSTANCE)
-
+fun nettyUseLog4j() =  InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE)
