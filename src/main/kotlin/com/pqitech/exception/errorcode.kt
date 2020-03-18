@@ -24,7 +24,7 @@ object DefErrorCode
     // 格式检查 1010 ~ 1019
     val paramFormalError = ErrorCode(1010,"参数格式错误！")
     val emailFormalError = ErrorCode(1011,"email 格式错误！")
-    val phoneFormalError = ErrorCode(1011,"phone 格式错误！")
+    val phoneFormalError = ErrorCode(1012,"phone 格式错误！")
 
     // User 2000 ~ 2099
     val userNoLogin  = ErrorCode(2000,"用户未登录！")
@@ -34,4 +34,5 @@ object DefErrorCode
     val tokenInValid = ErrorCode(2004,"Token 无效")
     val userDisable = ErrorCode(2005,"用户被禁用")
     val userNoPermission =  ErrorCode(2006,"用户无权限")
+    val UserAlreadytExists = ErrorCode(2007,"用户已经存在")
 }
