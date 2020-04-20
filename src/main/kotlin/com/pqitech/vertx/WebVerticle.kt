@@ -16,6 +16,9 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
   private lateinit var server : HttpServer
   private lateinit var router : Router
 
+  val httpServer get() = server
+  val httpRouter get() = router
+
   override suspend fun start() {
     server = vertx.createHttpServer(httpOptions())
     router = Router.router(vertx)

@@ -1,5 +1,6 @@
 package com.pqitech.vertx
 
+import com.pqitech.utils.launch
 import com.pqitech.utils.parseArgs
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Verticle
@@ -32,10 +33,12 @@ abstract class VertxApp {
     this.poolSize_ = optionVertx.eventLoopPoolSize
     this.workPoolSize_ = optionVertx.workerPoolSize
     this.vertx_ = Vertx.vertx(optionVertx)
-    doStart()
+    vertx.launch {
+      this.doStart()
+    }
   }
 
-  protected abstract fun doStart() ;
+  protected abstract suspend fun doStart() ;
 
   suspend fun deployVerticleConfigAwait(size : Int ,hander : ()->Verticle){
     val deploymentOptions = DeploymentOptions()
