@@ -7,10 +7,13 @@ import io.vertx.core.Verticle
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.json.JsonObject
+import io.vertx.kotlin.core.closeAwait
 import io.vertx.kotlin.core.deployVerticleAwait
+import org.apache.logging.log4j.LogManager
 import java.util.function.Supplier
 
 abstract class VertxApp {
+  private val log_ = LogManager.getLogger("com.pqitech.vertx.VertxApp")
   private lateinit var option_: JsonObject
   private var poolSize_ : Int = 2
   private var workPoolSize_ : Int = 2
@@ -34,7 +37,13 @@ abstract class VertxApp {
     this.workPoolSize_ = optionVertx.workerPoolSize
     this.vertx_ = Vertx.vertx(optionVertx)
     vertx.launch {
-      this.doStart()
+      try {
+        this.doStart()
+      } catch (e : Throwable){
+        e.printStackTrace()
+        log_.error(e)
+        vertx.closeAwait()
+      }
     }
   }
 
