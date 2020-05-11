@@ -12,7 +12,6 @@ import io.vertx.kotlin.coroutines.await
 import org.apache.logging.log4j.LogManager
 
 abstract class AbstractWebVerticle  : CoroutineVerticle() {
-  private val log_ = LogManager.getLogger("com.pqitech.vertx.WebVerticle")
   private lateinit var server : HttpServer
   private lateinit var router : Router
 
@@ -44,25 +43,28 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
     handleException(context,context.failure(),404)
   }
 
-  fun handleException(context: RoutingContext, e : Throwable?, status : Int = 500, msg : String = "")
-  {
-    val ret = JsonObject()
-    ret.put("status",status);
-    ret.put("error", status)
-    if(msg.isEmpty())
-      ret.put("message", e?.message ?: "未知错误")
-    else
-      ret.put("message", msg)
-    ret.put("data", JsonObject())
-    if(e != null){
-      if(e is ErrorCodeException){
-        log_.debug("catch ErrorCodeException : ",e);
-        ret.put("status", e.errorCode)
-      } else {
-        e.printStackTrace()
-        log_.warn("catch error exception : ",e);
+  companion object {
+    val log_ = LogManager.getLogger("com.pqitech.vertx.WebVerticle")
+
+    fun handleException(context: RoutingContext, e: Throwable?, status: Int = 500, msg: String = "") {
+      val ret = JsonObject()
+      ret.put("status", status);
+      ret.put("error", status)
+      if (msg.isEmpty())
+        ret.put("message", e?.message ?: "未知错误")
+      else
+        ret.put("message", msg)
+      ret.put("data", JsonObject())
+      if (e != null) {
+        if (e is ErrorCodeException) {
+          log_.debug("catch ErrorCodeException : ", e);
+          ret.put("status", e.errorCode)
+        } else {
+          e.printStackTrace()
+          log_.warn("catch error exception : ", e);
+        }
       }
+      context.response().setStatusCode(200).endJson(ret)
     }
-    context.response().setStatusCode(200).endJson(ret)
   }
 }
