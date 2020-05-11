@@ -1,16 +1,18 @@
 package com.pqitech.vertx
 
 import io.vertx.core.http.HttpMethod
+import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+
+typealias MiddlewareFun = ((RoutingContext)->Unit)
+typealias BeforeAddRouteFun = ((Route)->Route)
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
-annotation class RouteInfo(
-  val path : String,
-  val method : String = "GET"
-)
+annotation class RouteInfo(val path : String,
+                           val method : String = "GET")
 
 
 interface  RouteBaseController {
@@ -22,33 +24,51 @@ interface  RouteBaseController {
 }
 
 
-fun <T : RouteBaseController> Router.addRoute(classInfo : Class<T>)
+fun <T : RouteBaseController> Router.addRoute(classInfo : Class<T>,middlewareFun: MiddlewareFun ? = null)
+{
+  this.addClassRoute(classInfo){ route ->
+    if(middlewareFun != null)
+      route.handler(middlewareFun)
+    route
+  }
+}
+
+fun <T : RouteBaseController> Router.addRoute(obj : T,middlewareFun: MiddlewareFun ? = null)
+{
+  this.addClassRoute(obj){ route ->
+    if(middlewareFun != null)
+      route.handler(middlewareFun)
+    route
+  }
+}
+
+fun <T : RouteBaseController> Router.addClassRoute(classInfo : Class<T>,addRouteFun: BeforeAddRouteFun)
 {
   for(method in classInfo.methods){
     val value = method.getAnnotation(RouteInfo::class.java)
     if(value != null){
-      val httpmethod = HttpMethod.valueOf(value.method.toUpperCase())
-      val route = this.route(httpmethod,value.path);
-        route.handler {
-          try {
-            val obj = classInfo.getDeclaredConstructor().newInstance()
-            method.invoke(obj, it);
-          } catch (e: Throwable){
-            it.fail(e)
-          }
+      val httpMethod = HttpMethod.valueOf(value.method.toUpperCase())
+      val route = this.route(httpMethod,value.path)
+      addRouteFun(route).handler {
+        try {
+          val obj = classInfo.getDeclaredConstructor().newInstance()
+          method.invoke(obj, it);
+        } catch (e: Throwable){
+          it.fail(e)
         }
+      }
     }
   }
 }
 
-fun <T : RouteBaseController> Router.addRoute(obj : T)
+fun <T : RouteBaseController> Router.addClassRoute(obj : T,addRouteFun: BeforeAddRouteFun)
 {
   for(method in obj.javaClass.methods){
     val value = method.getAnnotation(RouteInfo::class.java)
     if(value != null){
       val httpMethod = HttpMethod.valueOf(value.method.toUpperCase())
       val route = this.route(httpMethod,value.path);
-      route.handler {
+      addRouteFun(route).handler {
         try {
           method.invoke(obj, it);
         } catch (e: Throwable){

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.pqitech.pqVertixLib'
-version = '0.0.7-vertx4'
+version = '0.0.8-vertx4'
 
 repositories {
   maven {
