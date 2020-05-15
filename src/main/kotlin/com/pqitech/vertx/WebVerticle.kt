@@ -27,6 +27,10 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
   }
 
   protected abstract suspend fun  doInit()
+  protected open fun doFailureHandle(context: RoutingContext)
+  {
+    handleException(context,context.failure(),404)
+  }
 
   override suspend fun stop() {
     server.close().await()
@@ -40,7 +44,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
 
   private fun failureHandler(context: RoutingContext)
   {
-    handleException(context,context.failure(),404)
+    doFailureHandle(context);
   }
 
   companion object {
