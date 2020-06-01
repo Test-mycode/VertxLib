@@ -63,6 +63,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
         if (e is ErrorCodeException) {
           log_.debug("catch ErrorCodeException : ", e);
           ret.put("status", e.errorCode)
+          ret.put("error", status)
         } else {
           e.printStackTrace()
           log_.warn("catch error exception : ", e);
