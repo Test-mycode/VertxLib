@@ -60,15 +60,15 @@ fun RoutingContext.executeBlocking(handle : ()-> Unit)
 fun RoutingContext.handleException(e : Throwable?, status : Int = 500, msg : String = "")
 {
   val ret = JsonObject()
-  ret.put("status",status);
+  ret.put("code",status);
   if(msg.isEmpty())
-    ret.put("msg", e?.message ?: "未知错误")
+    ret.put("message", e?.message ?: "未知错误")
   else
-    ret.put("msg", msg)
+    ret.put("message", msg)
 
   if(e != null){
     if(e is ErrorCodeException){
-      ret.put("status", e.errorCode)
+      ret.put("code", e.errorCode)
       log.debug(e)
     } else {
       log.warn("has erro: ", e)
