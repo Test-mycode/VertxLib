@@ -1,12 +1,14 @@
-package com.pqitech.vertx
+package com.pqitech.pqVertxLib.vertx
 
-import com.pqitech.utils.launch
-import com.pqitech.utils.parseArgs
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule
+import com.pqitech.pqVertxLib.utils.launch
+import com.pqitech.pqVertxLib.utils.parseArgs
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Verticle
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.json.JsonObject
+import io.vertx.core.json.jackson.DatabindCodec
 import io.vertx.kotlin.core.closeAwait
 import io.vertx.kotlin.core.deployVerticleAwait
 import org.apache.logging.log4j.LogManager
@@ -36,6 +38,8 @@ abstract class VertxApp {
     this.poolSize_ = optionVertx.eventLoopPoolSize
     this.workPoolSize_ = optionVertx.workerPoolSize
     this.vertx_ = Vertx.vertx(optionVertx)
+    DatabindCodec.mapper().registerModule(AfterburnerModule())
+    DatabindCodec.prettyMapper().registerModule(AfterburnerModule())
     vertx.launch {
       try {
         this.doStart()

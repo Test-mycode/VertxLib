@@ -1,7 +1,7 @@
-package com.pqitech.vertx
+package com.pqitech.pqVertxLib.vertx
 
-import com.pqitech.exception.ErrorCodeException
-import com.pqitech.utils.endJson
+import com.pqitech.pqVertxLib.exception.ErrorCodeException
+import com.pqitech.pqVertxLib.utils.endJson
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.JsonObject
