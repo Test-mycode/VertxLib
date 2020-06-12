@@ -1,5 +1,6 @@
 package com.pqitech.pqVertxLib.vertx
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule
 import com.pqitech.pqVertxLib.utils.launch
 import com.pqitech.pqVertxLib.utils.parseArgs
@@ -40,6 +41,8 @@ abstract class VertxApp {
     this.vertx_ = Vertx.vertx(optionVertx)
     DatabindCodec.mapper().registerModule(AfterburnerModule())
     DatabindCodec.prettyMapper().registerModule(AfterburnerModule())
+    DatabindCodec.mapper().configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,true)
+    DatabindCodec.prettyMapper().configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,true)
     vertx.launch {
       try {
         this.doStart()
