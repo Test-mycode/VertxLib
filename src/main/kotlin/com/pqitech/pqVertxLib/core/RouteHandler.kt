@@ -1,20 +1,16 @@
 package com.pqitech.pqVertxLib.core
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpServerResponse
-import io.vertx.core.json.Json
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.core.json.jackson.DatabindCodec
-import io.vertx.core.json.jackson.JacksonCodec
-import io.vertx.core.spi.json.JsonCodec
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.hibernate.validator.HibernateValidator
 import java.lang.invoke.MethodHandle
 import java.lang.reflect.InvocationTargetException
@@ -22,11 +18,10 @@ import java.lang.reflect.Method
 import javax.validation.Validation
 import javax.validation.ValidationException
 import javax.validation.Validator
-import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 class RouteHandler(
+  method: Method,
   private val instance: Any,
-  private val method: Method,
   private val methodHandle: MethodHandle
 ) : Handler<RoutingContext> {
   val routeInfo: RouteInfo =
@@ -52,8 +47,7 @@ class RouteHandler(
   }
 
   private fun <T> validate(obj: T) {
-    val constraintViolations =
-      RouteHandler.Companion.validator.validate(obj)
+    val constraintViolations = validator.validate(obj)
     // 抛出检验异常
     if (constraintViolations.size > 0) {
       throw ValidationException(String.format("参数校验失败:%s", constraintViolations.iterator().next().message))
@@ -111,6 +105,9 @@ class RouteHandler(
         throw IllegalArgumentException("请求参数" + routePathValue.value + "解析出错", e)
       }
     }
+    if(routeArg.isUploadFile) {
+      return routingContext.fileUploads()
+    }
     return if (routeArg.isRoutingContext) {
       routingContext
     } else null
@@ -122,10 +119,10 @@ class RouteHandler(
   }
 
   override fun handle(routingContext: RoutingContext) {
-    val context = this;
+    val context = this
     CoroutineScope(routingContext.vertx().dispatcher()).launch {
       try {
-        val result = suspendCoroutineUninterceptedOrReturn<Any> { continuation ->
+        val result = suspendCancellableCoroutine <Any> { continuation ->
           if (context.routeInfo.isSuspend)
             methodHandle.invokeWithArguments(*generateParams(routingContext), continuation)
           else
@@ -143,21 +140,21 @@ class RouteHandler(
   @Throws(JsonProcessingException::class)
   private fun output(response: HttpServerResponse, result: Any?) {
     if (routeInfo.mediaType != null)
-      response.putHeader("Content-Type", routeInfo.mediaType);
+      response.putHeader("Content-Type", routeInfo.mediaType)
 
     if (result == null || result.javaClass == Void::class.java) {
       response.end()
     } else if (result is String) {
       if (routeInfo.mediaType == null)
-        response.putHeader("Content-Type", "text/plain; charset=utf-8");
+        response.putHeader("Content-Type", "text/plain; charset=utf-8")
       response.end(result)
     } else if (result is JsonArray || result is JsonObject) {
       if (routeInfo.mediaType == null)
-        response.putHeader("Content-Type", "application/json; charset=utf-8");
+        response.putHeader("Content-Type", "application/json; charset=utf-8")
       response.end(result.toString())
     } else {
       if (routeInfo.mediaType == null)
-        response.putHeader("Content-Type", "application/json; charset=utf-8");
+        response.putHeader("Content-Type", "application/json; charset=utf-8")
 
       response.end(DatabindCodec.mapper().writeValueAsString(result))
     }

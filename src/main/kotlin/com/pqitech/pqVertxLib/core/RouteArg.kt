@@ -1,10 +1,7 @@
 package com.pqitech.pqVertxLib.core
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.pqitech.pqVertxLib.anno.RouteBody
-import com.pqitech.pqVertxLib.anno.RouteHeader
-import com.pqitech.pqVertxLib.anno.RouteParam
-import com.pqitech.pqVertxLib.anno.RoutePathValue
+import com.pqitech.pqVertxLib.anno.*
 import java.lang.reflect.Type
 
 class RouteArg {
@@ -20,6 +17,8 @@ class RouteArg {
   var isPathValue = false
   var routePathValue: RoutePathValue? = null
   var isRoutingContext = false
+  var routeFiles: RouteFiles? = null
+  var isUploadFile = false;
   private fun setType(type: Type) {
     if (type.typeName == String::class.java.typeName) isString = true
     this.type = object : TypeReference<Any?>() {
@@ -66,6 +65,13 @@ class RouteArg {
       val routeArg = RouteArg()
       routeArg.isRoutingContext = true
       return routeArg
+    }
+
+    fun createUploadFiles(routerFiles: RouteFiles): RouteArg {
+      val routerArg = RouteArg();
+      routerArg.isUploadFile = true
+      routerArg.routeFiles = routerFiles;
+      return routerArg;
     }
   }
 }

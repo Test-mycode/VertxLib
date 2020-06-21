@@ -1,20 +1,17 @@
 package com.pqitech.pqVertxLib.core
 import com.pqitech.pqVertxLib.anno.*
-import io.vertx.core.json.JsonArray
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import java.lang.reflect.Method
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.reflect.jvm.kotlinFunction
 
-class RouteInfo(private var method: Method) {
+class RouteInfo(method: Method) {
   var isSuspend = false
   var isBlocking = false
   var mediaType: String? = null
   var produces: Produces? = null
   var routeMapping: RouteMapping? = null
-  val args: MutableList<RouteArg> = ArrayList();
+  val args: MutableList<RouteArg> = ArrayList()
 
   init {
     isBlocking = method.getAnnotation(ExecuteBlock::class.java) != null
@@ -22,13 +19,13 @@ class RouteInfo(private var method: Method) {
     for (parameter in method.parameters) {
       val type = parameter.type
       if (type == RoutingContext::class.java) {
-        args.add(RouteArg.Companion.createRoutingContext())
+        args.add(RouteArg.createRoutingContext())
         continue
       }
       val routeBody = parameter.getAnnotation(RouteBody::class.java)
       if (routeBody != null) {
         args.add(
-            RouteArg.Companion.createBody(
+            RouteArg.createBody(
                 parameter.parameterizedType,
                 routeBody
             )
@@ -38,7 +35,7 @@ class RouteInfo(private var method: Method) {
       val routeHeader = parameter.getAnnotation(RouteHeader::class.java)
       if (routeHeader != null) {
         args.add(
-            RouteArg.Companion.createHeader(
+            RouteArg.createHeader(
                 parameter.parameterizedType,
                 routeHeader
             )
@@ -48,7 +45,7 @@ class RouteInfo(private var method: Method) {
       val routeParam = parameter.getAnnotation(RouteParam::class.java)
       if (routeParam != null) {
         args.add(
-            RouteArg.Companion.createParam(
+            RouteArg.createParam(
                 parameter.parameterizedType,
                 routeParam
             )
@@ -58,15 +55,20 @@ class RouteInfo(private var method: Method) {
       val routePathValue = parameter.getAnnotation(RoutePathValue::class.java)
       if (routePathValue != null) {
         args.add(
-            RouteArg.Companion.createPathValue(
+            RouteArg.createPathValue(
                 parameter.parameterizedType,
                 routePathValue
             )
         )
+        continue
+      }
+      val routeFiles = parameter.getAnnotation(RouteFiles::class.java)
+      if(routeFiles != null) {
+        args.add(RouteArg.createUploadFiles(routeFiles))
       }
     }
 
-    this.isSuspend = method.kotlinFunction?.isSuspend ?: false;
+    this.isSuspend = method.kotlinFunction?.isSuspend ?: false
 
     this.produces = method.getAnnotation(Produces::class.java)
     if (produces != null) {

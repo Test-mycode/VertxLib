@@ -22,7 +22,7 @@ abstract class RouteController {
     for (method in cls.declaredMethods) {
       if (method.isAnnotationPresent(RouteMapping::class.java)) {
         method.isAccessible = true
-        routes.add(RouteHandler(this, method, lookup.unreflect(method)))
+        routes.add(RouteHandler(method,this, lookup.unreflect(method)))
       }
     }
   }
