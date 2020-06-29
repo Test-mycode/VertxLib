@@ -28,8 +28,8 @@ data class MessageHeader(var id : Long = 0, var type : Int = 0,var length : Long
     {
         val header = MessageHeader()
         header.id = this.id
-        header.type = this.type + 1;
-        header.length = 0;
+        header.type = this.type + 1
+        header.length = 0
         header.compress = this.compress
         header.crypt = this.crypt
         return header

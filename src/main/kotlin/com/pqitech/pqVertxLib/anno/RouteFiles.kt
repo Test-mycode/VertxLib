@@ -1,11 +1,8 @@
 package com.pqitech.pqVertxLib.anno
 
-@Target(
-  AnnotationTarget.FUNCTION,
-  AnnotationTarget.PROPERTY_GETTER,
-  AnnotationTarget.PROPERTY_SETTER,
-  AnnotationTarget.ANNOTATION_CLASS,
-  AnnotationTarget.CLASS
-)
+import java.lang.annotation.Inherited
+
+@Inherited
+@Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RouteFiles()

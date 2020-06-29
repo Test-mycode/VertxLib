@@ -18,7 +18,7 @@ class RouteArg {
   var routePathValue: RoutePathValue? = null
   var isRoutingContext = false
   var routeFiles: RouteFiles? = null
-  var isUploadFile = false;
+  var isUploadFile = false
   private fun setType(type: Type) {
     if (type.typeName == String::class.java.typeName) isString = true
     this.type = object : TypeReference<Any?>() {
@@ -68,10 +68,10 @@ class RouteArg {
     }
 
     fun createUploadFiles(routerFiles: RouteFiles): RouteArg {
-      val routerArg = RouteArg();
+      val routerArg = RouteArg()
       routerArg.isUploadFile = true
-      routerArg.routeFiles = routerFiles;
-      return routerArg;
+      routerArg.routeFiles = routerFiles
+      return routerArg
     }
   }
 }

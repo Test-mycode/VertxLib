@@ -1,4 +1,4 @@
-package com.pqitech.pqVertxLib.exception;
+package com.pqitech.pqVertxLib.exception
 
 import java.lang.Exception
 

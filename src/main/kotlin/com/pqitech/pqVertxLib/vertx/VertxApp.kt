@@ -64,7 +64,7 @@ abstract class VertxApp {
 
   suspend fun deployVerticleConfigAwait(deploymentOptions : DeploymentOptions ,hander : ()->Verticle){
     deploymentOptions.config = startOptions
-    vertx.deployVerticleAwait(Supplier<Verticle> { hander() },deploymentOptions)
+    vertx.deployVerticleAwait(Supplier { hander() },deploymentOptions)
   }
 }
 

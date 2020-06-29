@@ -1,10 +1,10 @@
 package com.pqitech.pqVertxLib.anno
 
+import java.lang.annotation.Inherited
+
+@Inherited
 @Target(
   AnnotationTarget.FUNCTION,
-  AnnotationTarget.PROPERTY_GETTER,
-  AnnotationTarget.PROPERTY_SETTER,
-  AnnotationTarget.ANNOTATION_CLASS,
   AnnotationTarget.CLASS
 )
 @Retention(AnnotationRetention.RUNTIME)
