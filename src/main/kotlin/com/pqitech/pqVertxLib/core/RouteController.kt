@@ -8,13 +8,12 @@ import java.lang.invoke.MethodHandles
 import java.util.*
 
 abstract class RouteController {
-  private val cls: Class<*>
   private val routeMapping: RouteMapping?
   private val lookup: MethodHandles.Lookup
   private val routes: MutableList<RouteHandler>
 
   init {
-    cls = this.javaClass
+    val cls = this.javaClass
     routes = LinkedList()
     lookup = MethodHandles.lookup()
     routeMapping = cls.getAnnotation(RouteMapping::class.java)

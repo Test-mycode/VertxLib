@@ -7,6 +7,8 @@ import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.core.http.closeAwait
+import io.vertx.kotlin.core.http.listenAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import org.apache.logging.log4j.LogManager
@@ -23,7 +25,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
     router = Router.router(vertx)
     router.route().failureHandler(::failureHandler)
     doInit()
-    server.requestHandler(router).listen().await()
+    server.requestHandler(router).listenAwait()
   }
 
   protected abstract suspend fun  doInit()
@@ -33,7 +35,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
   }
 
   override suspend fun stop() {
-    server.close().await()
+    server.closeAwait()
   }
 
   private fun httpOptions() : HttpServerOptions {

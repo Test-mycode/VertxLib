@@ -10,7 +10,6 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.hibernate.validator.HibernateValidator
 import java.lang.invoke.MethodHandle
 import java.lang.reflect.InvocationTargetException
@@ -18,6 +17,7 @@ import java.lang.reflect.Method
 import javax.validation.Validation
 import javax.validation.ValidationException
 import javax.validation.Validator
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 class RouteHandler(
   method: Method,
@@ -119,16 +119,13 @@ class RouteHandler(
   }
 
   override fun handle(routingContext: RoutingContext) {
-    val context = this
     CoroutineScope(routingContext.vertx().dispatcher()).launch {
       try {
-        val result = suspendCancellableCoroutine <Any> { continuation ->
-          if (context.routeInfo.isSuspend)
-            methodHandle.invokeWithArguments(*generateParams(routingContext), continuation)
-          else
-            methodHandle.invokeWithArguments(*generateParams(routingContext))
-        }
-        context.output(routingContext.response(), result)
+        val result = if (routeInfo.isSuspend) suspendCoroutineUninterceptedOrReturn <Any> {
+          methodHandle.invokeWithArguments(*generateParams(routingContext), it)
+        } else
+          methodHandle.invokeWithArguments(*generateParams(routingContext))
+        output(routingContext.response(), result)
       } catch (e: InvocationTargetException) {
         routingContext.fail(e.targetException)
       } catch (throwable: Throwable) {
@@ -142,7 +139,7 @@ class RouteHandler(
     if (routeInfo.mediaType != null)
       response.putHeader("Content-Type", routeInfo.mediaType)
 
-    if (result == null || result.javaClass == Void::class.java) {
+    if (result == null) {
       response.end()
     } else if (result is String) {
       if (routeInfo.mediaType == null)
@@ -152,7 +149,7 @@ class RouteHandler(
       if (routeInfo.mediaType == null)
         response.putHeader("Content-Type", "application/json; charset=utf-8")
       response.end(result.toString())
-    } else {
+    } else if(result.javaClass != Void::class.java){
       if (routeInfo.mediaType == null)
         response.putHeader("Content-Type", "application/json; charset=utf-8")
 
