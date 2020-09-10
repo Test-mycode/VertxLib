@@ -40,7 +40,7 @@ class MessageRead(val hander : (MessageHeader, Buffer?)->Unit, val erroHandle : 
 
                 }
                 2 -> { // ID
-                    if(readHeaderCloum(byte,4)){
+                    if(readHeaderColumn(byte,4)){
                         header.id = byteBuffer.getUnsignedInt(0)
                         _bytePos = 0
                         _status ++
@@ -48,7 +48,7 @@ class MessageRead(val hander : (MessageHeader, Buffer?)->Unit, val erroHandle : 
                     pos ++
                 }
                 3 -> { // type
-                    if(readHeaderCloum(byte,2)){
+                    if(readHeaderColumn(byte,2)){
                         header.type = byteBuffer.getUnsignedShort(0)
                         _bytePos = 0
                         _status ++
@@ -57,7 +57,7 @@ class MessageRead(val hander : (MessageHeader, Buffer?)->Unit, val erroHandle : 
                 }
                 4 -> {
                   // length
-                    if(readHeaderCloum(byte,4)){
+                    if(readHeaderColumn(byte,4)){
                         header.length = byteBuffer.getUnsignedInt(0)
                         _bytePos = 0
                         _status ++
@@ -141,7 +141,7 @@ class MessageRead(val hander : (MessageHeader, Buffer?)->Unit, val erroHandle : 
         return Pair<Boolean,Int>(retBool,retRead)
     }
 
-    private fun readHeaderCloum(byte : Byte, max : Int) : Boolean{
+    private fun readHeaderColumn(byte : Byte, max : Int) : Boolean{
         byteBuffer.setByte(_bytePos,byte)
         _bytePos ++
         return (_bytePos >= max)
