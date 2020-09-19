@@ -7,10 +7,8 @@ import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import io.vertx.kotlin.core.http.closeAwait
-import io.vertx.kotlin.core.http.listenAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
-import io.vertx.kotlin.coroutines.await
+import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.logging.log4j.LogManager
 
 abstract class AbstractWebVerticle  : CoroutineVerticle() {
@@ -25,7 +23,10 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
     router = Router.router(vertx)
     router.route().failureHandler(::failureHandler)
     doInit()
-    server.requestHandler(router).listenAwait()
+    awaitResult<HttpServer> {
+      server.requestHandler(router).listen(it)
+    }
+
   }
 
   protected abstract suspend fun  doInit()
@@ -35,7 +36,9 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
   }
 
   override suspend fun stop() {
-    server.closeAwait()
+    awaitResult<Void> {
+      server.close(it)
+    }
   }
 
   private fun httpOptions() : HttpServerOptions {
@@ -46,7 +49,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
 
   private fun failureHandler(context: RoutingContext)
   {
-    doFailureHandle(context);
+    doFailureHandle(context)
   }
 
   companion object {
@@ -54,7 +57,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
 
     fun handleException(context: RoutingContext, e: Throwable?, status: Int = 500, msg: String = "") {
       val ret = JsonObject()
-      ret.put("status", status);
+      ret.put("status", status)
       ret.put("error", status)
       if (msg.isEmpty())
         ret.put("message", e?.message ?: "未知错误")
@@ -63,12 +66,12 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
       ret.put("data", JsonObject())
       if (e != null) {
         if (e is ErrorCodeException) {
-          log_.debug("catch ErrorCodeException : ", e);
+          log_.debug("catch ErrorCodeException : ", e)
           ret.put("status", e.errorCode)
           ret.put("error", status)
         } else {
           e.printStackTrace()
-          log_.warn("catch error exception : ", e);
+          log_.warn("catch error exception : ", e)
         }
       }
       context.response().setStatusCode(200).endJson(ret)

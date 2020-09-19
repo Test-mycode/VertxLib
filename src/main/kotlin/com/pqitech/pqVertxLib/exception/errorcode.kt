@@ -4,11 +4,9 @@ import java.lang.Exception
 
 class ErrorCodeException(val errorCode : Int, msg : String ) : Exception(msg)
 {
-    constructor(code : ErrorCode) : this(code.code,code.baseMsg) {
-    }
+    constructor(code : ErrorCode) : this(code.code,code.baseMsg)
 
-    constructor(code : ErrorCode, string: String) : this(code.code,"${code.baseMsg}: $string") {
-    }
+    constructor(code : ErrorCode, string: String) : this(code.code,"${code.baseMsg}: $string")
 }
 
 data class ErrorCode(val code : Int, val baseMsg : String)

@@ -25,7 +25,7 @@ fun HttpServerResponse.endJson(json: String) {
 }
 
 fun RoutingContext.launch(handle: suspend () -> Unit) {
-  val context = this;
+  val context = this
   CoroutineScope(this.vertx().dispatcher()).launch {
     try {
       handle()

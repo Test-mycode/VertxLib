@@ -10,8 +10,8 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.json.JsonObject
 import io.vertx.core.json.jackson.DatabindCodec
-import io.vertx.kotlin.core.closeAwait
 import io.vertx.kotlin.core.deployVerticleAwait
+import io.vertx.kotlin.coroutines.awaitResult
 import org.apache.logging.log4j.LogManager
 import java.util.function.Supplier
 
@@ -20,7 +20,7 @@ abstract class VertxApp {
   private lateinit var option_: JsonObject
   private var poolSize_ : Int = 2
   private var workPoolSize_ : Int = 2
-  private lateinit var vertx_: Vertx;
+  private lateinit var vertx_: Vertx
 
   val vertx get() = vertx_
   val startOptions get() = option_
@@ -49,12 +49,14 @@ abstract class VertxApp {
       } catch (e : Throwable){
         e.printStackTrace()
         log_.error(e)
-        vertx.closeAwait()
+        awaitResult<Void> {
+          vertx.close(it)
+        }
       }
     }
   }
 
-  protected abstract suspend fun doStart() ;
+  protected abstract suspend fun doStart()
 
   suspend fun deployVerticleConfigAwait(size : Int ,hander : ()->Verticle){
     val deploymentOptions = DeploymentOptions()
@@ -64,7 +66,7 @@ abstract class VertxApp {
 
   suspend fun deployVerticleConfigAwait(deploymentOptions : DeploymentOptions ,hander : ()->Verticle){
     deploymentOptions.config = startOptions
-    vertx.deployVerticleAwait(Supplier { hander() },deploymentOptions)
+    vertx.deployVerticleAwait({ hander() },deploymentOptions)
   }
 }
 

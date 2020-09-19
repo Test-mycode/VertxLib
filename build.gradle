@@ -8,14 +8,8 @@ group = 'com.pqitech.pqVertxLib'
 version = '0.0.10-vertx3'
 
 repositories {
-  maven {
-    url 'https://oss.sonatype.org/content/repositories/snapshots'
-    maven { url 'https://maven.aliyun.com/repository/public' }
-    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-//    mavenContent {
-//      snapshotsOnly()
-//    }
-  }
+  maven { url 'https://maven.aliyun.com/repository/public' }
+  maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
   mavenCentral()
   jcenter()
 }
