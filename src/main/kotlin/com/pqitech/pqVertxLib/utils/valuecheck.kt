@@ -18,6 +18,13 @@ fun <T> T?.checkParamNull(key : String = "") : T
     return this
 }
 
+fun String.trimToNull(): String? {
+  return if(this.isBlank())
+    null
+  else
+    this.trim()
+}
+
 fun JsonObject.mustString(key : String) : String
 {
     val ret = this.getString(key,"")
@@ -47,6 +54,6 @@ fun MultiMap.maybe(key : String) : String
 {
     val ret = this.get(key)
     if(ret.isNullOrEmpty())
-        return "";
+        return ""
     return ret
 }

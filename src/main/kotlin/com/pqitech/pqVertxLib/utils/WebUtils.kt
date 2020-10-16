@@ -1,6 +1,9 @@
 package com.pqitech.pqVertxLib.utils
 
 import com.pqitech.pqVertxLib.exception.ErrorCodeException
+import io.vertx.core.Future
+import io.vertx.core.Promise
+import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
@@ -35,21 +38,20 @@ fun RoutingContext.launch(handle: suspend () -> Unit) {
   }
 }
 
-
-fun RoutingContext.executeBlocking(handle: () -> Unit) {
-  val context = this
-  this.vertx().executeBlocking<Void>({
+fun <T> Vertx.executeBlocking(handle: () -> T): Future<T> {
+  val promise = Promise.promise<T>()
+  this.executeBlocking<T>({
     try {
-      handle()
-      it.complete()
+      it.complete(handle())
     } catch (e: Throwable) {
       it.fail(e)
     }
-  },{
-    if (!it.succeeded()) {
-      context.fail(it.cause())
-    }
-  })
+  },promise)
+  return promise.future()
+}
+
+fun <T>RoutingContext.executeBlocking(handle: () -> T): Future<T> {
+  return this.vertx().executeBlocking(handle)
 }
 
 fun RoutingContext.handleException(e: Throwable?, status: Int = 500, msg: String = "") {

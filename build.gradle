@@ -19,7 +19,7 @@ ext {
   elVersion = "3.0.0"
   hibernateValidatorVersion = '6.1.5.Final'
   kotlinVersion = '1.4.0'
-  vertxVersion = '3.9.3'
+  vertxVersion = '3.9.4'
   log4jVerion = '2.13.1'
 }
 
