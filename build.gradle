@@ -1,7 +1,7 @@
 plugins {
-  id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+  id 'org.jetbrains.kotlin.jvm' version '1.4.20'
   id 'application'
-  id 'com.github.johnrengelman.shadow' version '5.0.0'
+  id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group = 'com.pqitech.pqVertxLib'
@@ -15,12 +15,12 @@ repositories {
 }
 
 ext {
-  jacksonVersion = '2.11.0'
+  jacksonVersion = '2.12.0'
   elVersion = "3.0.0"
   hibernateValidatorVersion = '6.1.5.Final'
-  kotlinVersion = '1.4.0'
-  vertxVersion = '3.9.4'
-  log4jVerion = '2.13.1'
+  kotlinVersion = '1.4.20'
+  vertxVersion = '3.9.5'
+  log4jVerion = '2.14.0'
 }
 
 application {

@@ -63,6 +63,7 @@ abstract class AbstractWebVerticle  : CoroutineVerticle() {
         ret.put("message", e?.message ?: "未知错误")
       else
         ret.put("message", msg)
+      e?.printStackTrace()
       ret.put("data", JsonObject())
       if (e != null) {
         if (e is ErrorCodeException) {
